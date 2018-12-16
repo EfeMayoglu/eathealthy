@@ -1,0 +1,88 @@
+﻿@{ Layout = null;
+    var link = "http://40.121.151.103:80";
+    //    link = "http://localhost:54661/";
+
+}
+
+@using EatHealthy.Models
+@model List<Hit>
+<span class="header-icons-noti">@Model.Count</span>
+
+
+<div class="header-cart header-dropdown">
+    <ul class="header-cart-wrapitem">
+        @foreach (var item in Model)
+        {
+           
+            <li class="header-cart-item">
+                <div onclick="DeleteFromBasket('@item.recipe.label', '@item.recipe.image')" class="header-cart-item-img">
+                    <img  src="@item.recipe.image" alt="IMG">
+                </div>
+
+                <div class="header-cart-item-txt">
+                    <a href="#" class="header-cart-item-name">
+                        @item.recipe.label
+                    </a>
+
+                    <span class="header-cart-item-info">
+                        1 x @item.recipe.calories.ToString("0.##")
+                    </span>
+                </div>
+            </li>
+        }
+
+    </ul>
+
+    <div class="header-cart-total">
+        Total: @Model.Sum(x => x.recipe.calories).ToString("0.##")
+    </div>
+
+    <div class="header-cart-buttons">
+        <div class="header-cart-wrapbtn">
+            <!-- Button -->
+            <a onclick="CheckOutFunc()" id="CheckOut" href="#" class="flex-c-m size1 bg1 bo-rad-20 hov1 s-text1 trans-0-4">
+                Check Out
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    function CheckOutFunc() {
+        var res = swal("Daily calories", " have been completed !", "success");
+
+       
+        setTimeout(function () { window.location.href = '@link/Search/ClearSession'; }, 2000);
+
+           
+
+        
+    }
+    function DeleteFromBasket(label, img) {
+            $.ajax({
+                 url: "@(link)/Search/DeletFromBasket?label=" + label+"&img="+img,
+                 cache: false,
+                success: function (resp) {
+
+                    if (resp ==="ok") {
+                        $.ajax({
+                            url: "@(link)/Search/GetBasket",
+                            cache: false,
+                            success: function (html) {
+                                console.log(html);
+                                $(".Cart").empty();
+                                $(".Cart").append(html);
+                                swal("The food", " has been deleted!", "info");
+                            }
+                        });
+                    }
+                    
+                 }
+             });
+    }
+  
+
+
+</script>
